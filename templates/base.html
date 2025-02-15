@@ -10,6 +10,14 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a href="{% url 'tasks:task-list' %}" class = "navbar-brand">Головна</a>
+        <a href="{% url 'tasks:register' %}" class = "navbar-brand">Реєстрація</a>
+        <p class="position-absolute top-5 end-100">{{request.user.username}}</p>
+        
+    <form action = "{% url 'tasks:logout' %}"method = "post">
+        {% csrf_token %}        
+        <button class="btn btn-light position-absolute top-5 end-0 translate-middle-y" type="submit">Вихід</button>
+    </form>
+
     </nav>
     {% block content%}
 

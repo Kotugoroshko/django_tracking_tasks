@@ -6,6 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+
 
 
 class TaskListView(ListView):
@@ -35,7 +40,7 @@ class TaskDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-            form = forms.CommentForm(request.POST)
+            form = forms.CommentForm(request.POST, request.FILES)
             if form.is_valid():
                 comment = form.save(commit=False)
                 comment.author = request.user
@@ -117,3 +122,20 @@ class CommentLikesView(LoginRequiredMixin, View):
         else:
             models.Like.objects.create(comment=comment, user=request.user)
         return redirect('tasks:task-details', pk=comment.task.pk)
+
+class CustomLoginView(LoginView):
+    template_name = "tasks/login.html"
+    redirect_authenticated_user = True
+
+class CustomLogoutView(LogoutView):
+    next_page = 'tasks:login'
+
+
+class RegisterView(CreateView):
+    template_name = "tasks/register.html"
+    form_class = UserCreationForm
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect(reverse_lazy("tasks:login"))

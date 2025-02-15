@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% load custom_tags %}
 <div class="container mt-3">
     <h2>{{task.title}}</h2>
     <p>{{task.description}}</p>
@@ -11,12 +12,24 @@
 </div>
 <div class="container mt-3">
     <h2>Comments:</h2>
-    
     <div class="comment mb-2"></div>
     {% for comment in task.comments.all %}
         <small>{{comment.author.username}} - {{comment.created_at}}<a href="{% url 'tasks:edit-comment' comment.id %}" class="btn btn-outline-warning btn-sm">Редагувати</a><a href="{% url 'tasks:delete-comment' comment.id %}" class="btn btn-outline-danger btn-sm">Видалити</a></small> 
         <p>{{comment.content}}</p>
-        
+        {% if comment.media %}
+        <div class="comment-media">
+            {% if comment.media.url|endswith:".jpg" or comment.media.url|endswith:".png" or comment.media.url|endswith:".jpeg" %}
+                <img src="{{ comment.media.url }}" alt="Зображення коментаря" style = "max-width: 1000px;">
+            {% elif comment.media.url|endswith:".mp4" %}
+            <video width="320" height="240" controls>
+                <source src="{{ comment.media.url }}" tyle="video/mp4">
+                Your browser does not support the video tag
+            </video>
+            {% else %}
+                <a href="{{ comment.media.url }}">Завантажити файл</a>
+            {% endif %}
+        </div>
+        {% endif %}
         <form action="{% url 'tasks:like-comment' comment.id %}" method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm {% if request.user in comment.likes.all %}btn-success{% else %}btn-outline-success{% endif %}">

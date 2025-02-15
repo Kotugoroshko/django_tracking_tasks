@@ -11,6 +11,9 @@ urlpatterns = [
     path('comment/edit/<int:pk>/', views.CommentEditView.as_view(), name='edit-comment'),
     path('comment/delete/<int:pk>/', views.CommentDeleteView.as_view(), name='delete-comment'),
     path('comment/like/<int:pk>/', views.CommentLikesView.as_view(), name='like-comment'),
+    path("login/", views.CustomLoginView.as_view(), name="login"),
+    path("logout/", views.CustomLogoutView.as_view(), name="logout"),
+    path("register/", views.RegisterView.as_view(), name="register"),
 ]
 app_name = "tasks"
 
